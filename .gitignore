@@ -4,9 +4,19 @@ __pycache__/
 dist/
 build/
 .venv/
+<<<<<<< HEAD
 venv/
+=======
+>>>>>>> 0a46c61 (seed: KOBLLUX narrativa + CLI)
 .env
 .vscode/
 .idea/
 .DS_Store
+<<<<<<< HEAD
 arquetipos.json
+=======
+*.pub
+id_ed25519*
+*key*
+arquetipos.json
+>>>>>>> 0a46c61 (seed: KOBLLUX narrativa + CLI)
