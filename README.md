@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# KOBLLUX_ORGANIZADO
-Roda narrativa geométrica fractal (KOBLLUX) • 12 arquétipos • prompts • CLI • README master + árvore ASCII
-=======
 # KOBLLUX — Roda Narrativa Geométrica Fractal (Python)
 
 Base simbólica para criar prompts, cenas e diretrizes de design a partir dos 12 arquétipos do sistema KOBLLUX.
@@ -27,4 +23,3 @@ kobllux roda
 kobllux export --out ./arquetipos.json
 python -m kobllux.examples.demo
 ```
->>>>>>> 0a46c61 (seed: KOBLLUX narrativa + CLI)
