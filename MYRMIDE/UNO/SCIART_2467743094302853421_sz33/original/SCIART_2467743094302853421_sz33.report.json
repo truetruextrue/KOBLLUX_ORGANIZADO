@@ -1,0 +1,46 @@
+{
+  "seed": "SCIART_2467743094302853421_sz33",
+  "size": 33,
+  "law": "VERDADE × INTEGRAR ÷ Δ = ♾️",
+  "delta7": {
+    "checksum": 0,
+    "valid": true
+  },
+  "palindrome": {
+    "horizontal": true,
+    "vertical": true
+  },
+  "characters": {
+    "unique": [
+      " ",
+      "#",
+      "*",
+      "+",
+      ".",
+      ":",
+      "@",
+      "O",
+      "o"
+    ],
+    "counts": {
+      " ": 104,
+      "#": 94,
+      "*": 116,
+      "+": 164,
+      ".": 124,
+      ":": 150,
+      "@": 105,
+      "O": 104,
+      "o": 128
+    }
+  },
+  "paths": {
+    "ascii": "MYRMIDE/UNO/SCIART_2467743094302853421_sz33/original/SCIART_2467743094302853421_sz33.ascii.txt",
+    "mirrors": {
+      "mirror_h": "MYRMIDE/UNO/SCIART_2467743094302853421_sz33/mirror_h/SCIART_2467743094302853421_sz33.ascii.txt",
+      "mirror_v": "MYRMIDE/UNO/SCIART_2467743094302853421_sz33/mirror_v/SCIART_2467743094302853421_sz33.ascii.txt",
+      "rot180": "MYRMIDE/UNO/SCIART_2467743094302853421_sz33/rot180/SCIART_2467743094302853421_sz33.ascii.txt"
+    }
+  },
+  "hash": "63896a1766c16e71f684ff1f68c78fed5d66a3ab2ed5622760efd6b2b81c2822"
+}
