@@ -6,6 +6,7 @@ Inclui:
 - Ciclos 3–6–9, roda viva, e narrativas programáticas.
 - Geração de *prompts* textuais para diretores de arte e designers.
 - Exportação em JSON e CLI simples.
+- Documentos estendidos com frames visuais, como o [Pulso de Ativação KOBLLUX #13](README_PULSO_13.md).
 
 ## Instalação rápida
 
