@@ -6,6 +6,7 @@ Inclui:
 - Ciclos 3–6–9, roda viva, e narrativas programáticas.
 - Geração de *prompts* textuais para diretores de arte e designers.
 - Exportação em JSON e CLI simples.
+- Interface audiovisual experimental da **Roda Viva A7 Player** em HTML (`kobllux/examples/roda_viva.html`).
 
 ## Instalação rápida
 
