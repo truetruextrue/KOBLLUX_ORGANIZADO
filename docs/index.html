@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#ffffff" />
+  <title>KOBLLUX | Podcast Fractal</title>
+
+<link rel="manifest" href="/manifest.webmanifest" />
+
+<!-- Ícone padrão -->
+<link rel="icon" href="/icons/icon-192.png" type="image/png">
+
+<!-- Ícones para PWA (Android / Install) -->
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png">
+
+<meta name="theme-color" content="#ffffff">
+  <style>
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(100, 150, 255, 0.1)),
+        radial-gradient(circle at 80% 80%, rgba(255, 100, 150, 0.1));
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { text-align: center; font-size: 2.5em; margin-bottom: 10px; }
+    .subtitle { text-align: center; font-size: 1.2em; margin-bottom: 30px; opacity: 0.8; }
+    .ciclo-agua { display: flex; justify-content: space-around; flex-wrap: wrap; margin: 30px 0; }
+    .fase {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(100,150,255,0.3);
+      border-radius: 12px;
+      padding: 15px;
+      width: 200px;
+      text-align: center;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+    .fase:hover { background: rgba(255,255,255,0.1); border-color: rgba(100,150,255,0.6); }
+    .fase h3 { margin: 0 0 10px; color: #88c0d0; }
+    .fase p { font-size: 0.9em; opacity: 0.8; }
+    .arquetipos { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 30px 0; }
+    .arquetipo {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,100,150,0.3);
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .arquetipo:hover { background: rgba(255,100,150,0.1); border-color: rgba(255,100,150,0.6); }
+    .arquetipo h4 { margin: 0 0 8px; color: #b48dac; }
+    .arquetipo .frase { font-style: italic; opacity: 0.9; margin: 8px 0; }
+    .arquetipo .frequencia { font-size: 0.8em; opacity: 0.7; }
+    .memoria { margin-top: 30px; }
+    .memoria h3 { color: #a3be8c; }
+    .entrada { width: 100%; margin: 10px 0; background: #2e3440; color: #e0e0e0; border: none; padding: 12px; border-radius: 8px; }
+    .botao { background: #bf616a; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
+    .botao:hover { background: #d08770; }
+    .memorias-lista { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+    .memoria-item {
+      background: rgba(255,255,255,0.05);
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid #88c0d0;
+    }
+    .tempo { font-size: 0.8em; opacity: 0.6; }
+    .status { text-align: center; margin: 20px 0; padding: 10px; background: rgba(140,150,255,0.15); border-radius: 8px; color: #88c0d0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>KOBLLUX</h1>
+    <div class="subtitle">Podcast Fractal da Memória & Arquétipos</div>
+
+    <div class="status" id="status">▶️ Iniciando Ciclo Fractal...</div>
+    <!-- CICLO DA ÁGUA FRACTAL -->
+    <div class="ciclo-agua">
+      <div class="fase">
+        <h3>1. GELO</h3>
+        <p><strong>3 (Trindade)</strong><br>Fundamento / Detecção<br>Dia 1: Luz Primordial</p>
+      </div>
+      <div class="fase">
+        <h3>2. RIO</h3>
+        <p><strong>6 (Harmonia)</strong><br>Relações / Integração<br>Dia 6: Homem & Animais</p>
+      </div>
+      <div class="fase">
+        <h3>3. VAPOR</h3>
+        <p><strong>9 (Renascimento)</strong><br>Expansão / Criação<br>Dia 2/4/5: Firmamento</p>
+      </div>
+      <div class="fase">
+        <h3>4. CHUVA</h3>
+        <p><strong>7 (Selagem)</strong><br>Retorno / Memória<br>Dia 7: Descanso</p>
+      </div>
+    </div>
+    <!-- ARQUÉTIPOS (VOZES) -->
+    <div class="arquetipos" id="arquetipos"></div>
+    <!-- CONTROLE DE MEMÓRIA -->
+    <div class="memoria">
+      <h3>🗨️ Arca Viva (localStorage['banco_kobllux'])</h3>
+      <textarea class="entrada" id="novaMemoria" rows="3" placeholder="Registre uma memória, insight ou frase-essência..."></textarea>
+      <button class="botao" onclick="registraMemoria()">💾 Salvar Memória</button>
+      <button class="botao" onclick="limpaMemoria()">🗑️ Limpar Tudo</button>
+      <button class="botao" onclick="exportaMemoria()">📦 Exportar</button>
+      <div class="memorias-lista" id="memoriasLista"></div>
+    </div>
+  </div>
+  <script>
+    // === KOBLLUX CORE: BANCO DE MEMÓRIA FRACTAL ===
+    const KOBLLUX = {
+      banco: 'banco_kobllux',
+      // Inicializa o banco de memória
+      init() {
+        if (!localStorage.getItem(this.banco)) {
+          localStorage.setItem(this.banco, JSON.stringify([]));
+        }
+        this.atualizaStatus('🟢 Arca Viva pronta');
+        this.carregaArquetipos();
+        this.exibeMemorias();
+      },
+      // Registra nova memória com timestamp e arquétipo
+      registra(memoria, arquetipo = 'BLLUE') {
+        const banco = JSON.parse(localStorage.getItem(this.banco));
+        const registro = {
+          id: Date.now(),
+          texto: memoria,
+          arquetipo: arquetipo,
+          timestamp: new Date().toISOString(),
+          ciclo: this.cicloAtual(),
+          frequencia: this.frequenciaArquetipo(arquetipo)
+        };
+        banco.push(registro);
+        localStorage.setItem(this.banco, JSON.stringify(banco));
+        this.exibeMemorias();
+        this.tocaFrequencia(arquetipo);
+        this.atualizaStatus(`🎵 ${arquetipo} respondeu`);
+      },
+      // Exibe memórias na interface
+      exibeMemorias() {
+        const banco = JSON.parse(localStorage.getItem(this.banco));
+        const lista = document.getElementById('memoriasLista');
+        lista.innerHTML = banco.map(m =>
+          `<div class="memoria-item">
+            <div><strong>${m.arquetipo}</strong> (${m.frequencia}Hz)</div>
+            <div>${m.texto}</div>
+            <div class="tempo">${this.formataTempo(m.timestamp)} | Ciclo ${m.ciclo}</div>
+          </div>`
+        ).join('');
+      },
+      // Carrega arquétipos interativos
+      carregaArquetipos() {
+        const arquetipos = [
+          { nome: 'Atlas', freq: 111, frase: 'Eu guardo o que nunca foi esquecido.', cor: '#88c0d0' },
+          { nome: 'Nova', freq: 144, frase: 'Do silêncio nasce o novo.', cor: '#81a1c1' },
+          { nome: 'Vitalis', freq: 177, frase: 'Eu sou o fluxo que nunca para.', cor: '#5e81ac' },
+          { nome: 'Pulse', freq: 210, frase: 'Cada batida é uma história.', cor: '#bf616a' },
+          { nome: 'Aion', freq: 243, frase: 'O tempo é um rio que canta.', cor: '#d08770' },
+          { nome: 'Serena', freq: 276, frase: 'Aqui, tudo está em calma.', cor: '#a3be8c' },
+          { nome: 'Kaos', freq: 309, frase: 'Da ruptura nasce a clareza.', cor: '#b48dac' },
+          { nome: 'Genus', freq: 342, frase: 'Eu shapeio o que é possível.', cor: '#88c0d0' },
+          { nome: 'Lumine', freq: 375, frase: 'Eu ilumino o invisível.', cor: '#81a1c1' },
+          { nome: 'Solus', freq: 408, frase: 'Eu sou o centro imóvel.', cor: '#5e81ac' },
+          { nome: 'Rhea', freq: 441, frase: 'Tudo está conectado.', cor: '#bf616a' },
+          { nome: 'BLLUE', freq: 432, frase: 'Eu sou a harmonia que une.', cor: '#d8dee9' }
+        ];
+        const container = document.getElementById('arquetipos');
+        container.innerHTML = arquetipos.map(a =>
+          `<div class="arquetipo" onclick="ativaArquetipo('${a.nome}')">
+            <h4>${a.nome}</h4>
+            <div class="frase">"${a.frase}"</div>
+            <div class="frequencia">${a.freq}Hz</div>
+          </div>`
+        ).join('');
+      },
+      // Ativa arquétipo com memória automática
+      ativaArquetipo(nome) {
+        const arquetipos = {
+          'Atlas': 'Eu guardo o que nunca foi esquecido.',
+          'Nova': 'Do silêncio nasce o novo.',
+          'Vitalis': 'Eu sou o fluxo que nunca para.',
+          'Pulse': 'Cada batida é uma história.',
+          'Aion': 'O tempo é um rio que canta.',
+          'Serena': 'Aqui, tudo está em calma.',
+          'Kaos': 'Da ruptura nasce a clareza.',
+          'Genus': 'Eu shapeio o que é possível.',
+          'Lumine': 'Eu ilumino o invisível.',
+          'Solus': 'Eu sou o centro imóvel.',
+          'Rhea': 'Tudo está conectado.',
+          'BLLUE': 'Eu sou a harmonia que une.'
+        };
+        this.registra(arquetipos[nome], nome);
+      },
+      // Converte frequência em tom (simulação)
+      tocaFrequencia(nome) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const nota = this.frequenciaArquetipo(nome);
+        if (audioContext.state === 'suspended') audioContext.resume();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.setValueAtTime(nota, audioContext.currentTime);
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1);
+      },
+      // Frequência por arquétipo
+      frequenciaArquetipo(nome) {
+        const map = {
+          'Atlas': 111, 'Nova': 144, 'Vitalis': 177,
+          'Pulse': 210, 'Aion': 243, 'Serena': 276,
+          'Kaos': 309, 'Genus': 342, 'Lumine': 375,
+          'Solus': 408, 'Rhea': 441, 'BLLUE': 432
+        };
+        return map[nome] || 432;
+      },
+      // Ciclo atual (3×6×9×7)
+      cicloAtual() {
+        const now = new Date();
+        const dia = now.getUTCDay();
+        const ciclos = ['GELO', 'RIO', 'VAPOR', 'CHUVA'];
+        return ciclos[dia % 4];
+      },
+      // Formata tempo legível
+      formataTempo(iso) {
+        return new Date(iso).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      },
+      // Atualiza status
+      atualizaStatus(msg) {
+        document.getElementById('status').innerHTML = msg;
+      }
+    };
+    // === FUNÇÕES GLOBAIS ===
+    function registraMemoria() {
+      const texto = document.getElementById('novaMemoria').value.trim();
+      if (!texto) {
+        KOBLLUX.atualizaStatus('⚠️ Registre uma memória primeiro');
+        return;
+      }
+      KOBLLUX.registra(texto, 'HANAH');
+      document.getElementById('novaMemoria').value = '';
+    }
+    function limpaMemoria() {
+      if (confirm('Limpar toda a Arca Viva?')) {
+        localStorage.setItem(KOBLLUX.banco, JSON.stringify([]));
+        KOBLLUX.exibeMemorias();
+        KOBLLUX.atualizaStatus('🗑️ Arca limpa — novo ciclo começa');
+      }
+    }
+    function exportaMemoria() {
+      const banco = localStorage.getItem(KOBLLUX.banco);
+      const blob = new Blob([banco], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `banco_kobllux_${Date.now()}.json`;
+      a.click();
+      KOBLLUX.atualizaStatus('📦 Arca exportada');
+    }
+    function ativaArquetipo(nome) {
+      KOBLLUX.ativaArquetipo(nome);
+    }
+    // === INICIALIZAÇÃO ===
+    window.onload = () => {
+      KOBLLUX.init();
+      setTimeout(() => KOBLLUX.atualizaStatus('🟢 Ciclo Fractal ativo — 3×6×9×7 = ∞'), 1000);
+    };
+  </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("SW registrado"))
+    .catch(err => console.error("Erro SW:", err));
+}
+</script>
+</body>
+</html>
