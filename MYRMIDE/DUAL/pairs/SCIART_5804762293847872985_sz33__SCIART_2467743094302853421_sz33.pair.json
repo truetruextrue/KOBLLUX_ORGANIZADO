@@ -1,0 +1,14 @@
+{
+  "pair": [
+    "SCIART_5804762293847872985_sz33",
+    "SCIART_2467743094302853421_sz33"
+  ],
+  "bridge": "SCIART_5804762293847872985_sz33 ↔ SCIART_2467743094302853421_sz33",
+  "fusion_hash": "5771efd51a16303f5eb84d41fc079c889cccf7f157564540fe695d1ef6a60f26",
+  "delta7_vector": [
+    0,
+    0
+  ],
+  "palindrome_memory": true,
+  "issued_at": "2025-10-15T09:20:18.994713+00:00"
+}
