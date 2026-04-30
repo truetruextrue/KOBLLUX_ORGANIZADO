@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <title>Roda Viva ♾️ KOBLLUX ∆7/∆5 — A7 Player • Fusão</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+    :root { --glow:#00ffff; --hue:180; }
+
+    /* ===== Altura real no mobile ===== */
+    html, body { height: 100dvh; }
+    @supports not (height: 100dvh) { html, body { height: 100vh; } }
+
+    /* Scroll destravado + contenção de overscroll */
+    body{margin:0;background:#001c1e;color:#fff;font-family:'Orbitron',system-ui,ui-sans-serif;overflow:auto;overscroll-behavior:contain}
+    canvas{display:block;position:fixed;inset:0;z-index:-1}
+    .title{ text-shadow:0 0 10px var(--glow),0 0 20px var(--glow),0 0 30px var(--glow)}
+    .btn{ background:rgba(0,255,255,.12); border:2px solid var(--glow); color:var(--glow); box-shadow:inset 0 0 15px rgba(0,255,255,.25), 0 0 10px rgba(0,255,255,.25); transition: all .2s; }
+    .btn:hover, .btn:focus-visible { background:rgba(0,255,255,.28); box-shadow:inset 0 0 25px rgba(0,255,255,.45), 0 0 20px rgba(0,255,255,.4); outline: none;}
+    .badge{border:1px solid rgba(255,255,255,.25); border-radius:.5rem; padding:.2rem .5rem; font-size:.75rem; color:#a5f3fc}
+    .panel{backdrop-filter: blur(16px) saturate(120%); background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); box-shadow:0 10px 40px rgba(0,0,0,.45); scrollbar-gutter: stable both-edges; }
+    .chip{border:1px solid rgba(255,255,255,.2); border-radius:.5rem; padding:.15rem .45rem; font-size:.7rem; opacity:.9}
+    .grid-auto{display:grid; grid-template-columns: minmax(0,1fr) auto auto; gap:.5rem; align-items:center}
+    .slider{appearance:none; height:6px; border-radius:999px; background:rgba(255,255,255,.18); outline:none; transition: background .2s;}
+    .slider:hover { background:rgba(255,255,255,.3); }
+    .slider::-webkit-slider-thumb{appearance:none; width:14px; height:14px; border-radius:50%; background:#a5f3fc; box-shadow:0 0 10px #67e8f9; cursor: grab;}
+    .slider::-moz-range-thumb {width:14px; height:14px; border-radius:50%; background:#a5f3fc; box-shadow:0 0 10px #67e8f9; cursor: grab;}
+    .portal-box{border:1px solid rgba(255,255,255,.18); border-radius:12px; padding:.75rem 1rem;}
+
+    /* ===== Toggler geral ===== */
+    .toggler{ width:32px;height:32px;border-radius:50%;background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.35);color:#a5f3fc;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s }
+    .toggler:hover{ background:rgba(0,255,255,.18); box-shadow:0 0 12px rgba(0,255,255,.25) inset }
+
+    /* ===== Minimizadores + drag genéricos ===== */
+    .panel-toggle{ width:30px;height:30px;border-radius:50%;background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.35);color:#a5f3fc;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s; transform: rotate(0deg); }
+    .panel-toggle:hover{ background:rgba(0,255,255,.18); box-shadow:0 0 12px rgba(0,255,255,.25) inset }
+    .drag-handle{ cursor:move; touch-action:none; user-select:none }
+    .only-when-open{ display:block }
+    .mini .only-when-open{ display:none !important }
+    .mini .panel-toggle { transform: rotate(-90deg); }
+
+    /* ===== Painéis ===== */
+    #hudPanel, #portalEntrada, #voicesAside, #masterPanel, #testPanel { position:fixed; z-index:26; transition: opacity .3s, transform .3s; }
+    .dragging { transition: none !important; }
+
+    /* ===== Loader ===== */
+    #loader{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.86); z-index:50; transition:opacity .3s }
+    #loader.hide{ opacity:0; pointer-events:none }
+    .loader-box{ border:1px solid rgba(0,255,255,.35); border-radius:16px; padding:16px 20px; background:rgba(0,0,0,.35); box-shadow:0 0 24px rgba(0,255,255,.15), inset 0 0 18px rgba(0,255,255,.12); color:#a5f3fc; text-align:center }
+    .loader-dot{ display:inline-block; width:6px; height:6px; border-radius:50%; background:#a5f3fc; margin:0 2px; opacity:.2; animation:pulse 1.2s infinite }
+    .loader-dot:nth-child(2){ animation-delay:.2s } .loader-dot:nth-child(3){ animation-delay:.4s }
+    @keyframes pulse{ 0%,100%{opacity:.2; transform:translateY(0)} 50%{opacity:1; transform:translateY(-3px)} }
+
+    /* ===== Extras da aba Arquivos ===== */
+    .tab-btn{ padding:.35rem .7rem; border:1px solid rgba(255,255,255,.2); border-radius:.5rem; font-size:.8rem; }
+    .tab-btn.active{ background:rgba(0,255,255,.18); color:#a5f3fc; border-color:rgba(0,255,255,.45); box-shadow:0 0 10px rgba(0,255,255,.25) inset; }
+    .codebox{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; white-space: pre; overflow:auto; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:10px; max-height:42vh; }
+
+    /* impede “salto” por overscroll no drag no mobile */
+    .draggable { max-width: 96vw; overscroll-behavior: contain; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 255, 0.5); }
+
+    /* Toast */
+    #toast { position: fixed; right: 10px; bottom: 10px; z-index: 60; display: grid; gap: 8px; }
+    .toast-item{ padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.65); color:#a5f3fc; box-shadow:0 4px 18px rgba(0,0,0,.45) }
+    .toast-ok{ border-color: rgba(16,185,129,.6); color:#bbf7d0 }
+    .toast-err{ border-color: rgba(239,68,68,.6); color:#fecaca }
+
+    .copy-highlight { outline: 2px dashed rgba(0,255,255,.6); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader" aria-live="polite">
+    <div class="loader-box">
+      <div class="text-sm mb-1">Carregando · KOBLLUX ∆7/∆5</div>
+      <div class="flex items-center justify-center gap-1">
+        <span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Canvas principal -->
+  <canvas id="canvas"></canvas>
+
+  <!-- HUD TOP (obediente ao painel mestre) -->
+  <div id="hudPanel" class="w-full max-w-5xl panel rounded-2xl px-4 py-3 pointer-events-auto draggable" style="left:50%; transform:translateX(-50%); top:60px;">
+    <div id="hudHeader" class="flex items-center justify-between gap-2 drag-handle">
+      <div class="text-sm text-cyan-200/80">╔═╗ HUD · PORTAL DE CRIAÇÃO ╔═╗</div>
+      <div class="flex items-center gap-2">
+        <button id="btnToggleHud" class="panel-toggle" title="Mini/Restaurar">▸</button>
+      </div>
+    </div>
+    <div class="only-when-open mt-2">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <div class="text-xs text-cyan-100/70">⊙ UNO → entrada • ⇄ DUAL → agente duplo • △ TRINITY → expansão • ☆⼺ → estética</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btnChange" class="btn rounded-lg px-4 py-2 font-bold">∆ MUDAR</button>
+          <button id="btnPause" class="btn rounded-lg px-4 py-2 font-bold">⏸︎ PAUSAR</button>
+          <button id="btnPreset" class="btn rounded-lg px-4 py-2 font-bold">∆5 AETHER</button>
+          <button id="btnDrum" class="btn rounded-lg px-4 py-2 font-bold">♾︎ 7.83Hz</button>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-2">
+        <span class="chip">Interconexão</span>
+        <button id="btnBreak" class="btn px-3 py-1.5 rounded-md text-sm">Partir</button>
+        <button id="btnSeal"  class="btn px-3 py-1.5 rounded-md text-sm">Selar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTAL DE ENTRADA (obediente) -->
+  <section id="portalEntrada" class="panel rounded-2xl p-3 pointer-events-auto draggable" style="left:1rem; top:8rem; width: min(420px, 94vw)">
+    <div id="portalHeader" class="flex items-center justify-between mb-2 drag-handle">
+      <div class="text-sm text-cyan-200/80">Portal de Entrada</div>
+      <div class="flex items-center gap-2">
+        <!-- Tabs -->
+        <div class="flex gap-2">
+          <button id="tabDecodifica" class="tab-btn active" title="ASCII / Decodifica">Decodifica</button>
+          <button id="tabArquivos"   class="tab-btn"        title="Abrir arquivos">Arquivos</button>
+        </div>
+        <button id="btnTogglePortal" class="panel-toggle" title="Mini/Restaurar">▸</button>
+      </div>
+    </div>
+
+    <!-- ABA: DECODIFICA -->
+    <div id="tabDecodificaBody" class="only-when-open">
+      <div class="flex flex-wrap items-center gap-2 mb-2">
+        <button id="btnAscii" class="btn px-3 py-1.5 rounded-md text-sm">ASCII</button>
+        <button id="btnCopy"  class="btn px-3 py-1.5 rounded-md text-sm">Copiar</button>
+        <button id="btnDecopy" class="btn px-3 py-1.5 rounded-md text-sm" title="Copiar prompt + arte ASCII">Decopy</button>
+      </div>
+      <textarea id="decodeIn" rows="2" class="w-full rounded-md bg-black/40 border border-white/20 p-2 text-sm outline-none mb-2 resize-y" placeholder="Verdade × integrar ÷ ∆ = ..."></textarea>
+      <div class="flex flex-wrap gap-2 mb-2">
+        <button class="btn px-3 py-1.5 rounded-md text-sm op" data-insert="VERDADE">Verdade</button>
+        <button class="btn px-3 py-1.5 rounded-md text-sm op" data-insert=" × ">×</button>
+        <button class="btn px-3 py-1.5 rounded-md text-sm op" data-insert=" ÷ ">÷</button>
+        <button class="btn px-3 py-1.5 rounded-md text-sm op" data-insert=" ∆ ">∆</button>
+        <button class="btn px-3 py-1.5 rounded-md text-sm op" data-insert=" = ">=</button>
+        <button id="btnActivate" class="btn px-4 py-1.5 rounded-md text-sm font-bold">♾️ ATIVAR RODA VIVA</button>
+      </div>
+      <pre id="asciiOut" class="mt-2 p-2 rounded-md bg-black/35 border border-white/10 min-h-[100px] overflow-auto text-xs"></pre>
+    </div>
+
+    <!-- ABA: ARQUIVOS -->
+    <div id="tabArquivosBody" class="only-when-open" style="display:none">
+      <div class="flex flex-wrap items-center gap-2 mb-2">
+        <label class="btn px-3 py-1.5 rounded-md text-sm cursor-pointer">
+          Abrir arquivo
+          <input id="fileInput" class="hidden" type="file" accept=".txt,.md,.json,.js,.jsx,.ts,.tsx,.html,.css" />
+        </label>
+        <button id="btnFileCopy"   class="btn px-3 py-1.5 rounded-md text-sm">Copiar</button>
+        <button id="btnFileDownload" class="btn px-3 py-1.5 rounded-md text-sm">Baixar</button>
+        <span id="fileMeta" class="chip" style="display:none"></span>
+      </div>
+      <pre id="fileView" class="codebox" aria-live="polite"><em style="opacity:.6">Nenhum arquivo aberto. Use “Abrir arquivo”.</em></pre>
+    </div>
+  </section>
+  
+  <!-- A7 PLAYER (VOICES) -->
+  <aside id="voicesAside" class="panel rounded-2xl p-4 draggable" style="left: 1rem; top: 28rem; width:min(420px, 94vw);">
+      <div id="voicesHeader" class="flex items-center justify-between mb-2 drag-handle">
+        <h2 class="text-lg font-bold title">A7 Player</h2>
+        <div class="flex items-center gap-2">
+            <span class="chip">VOZES</span>
+            <button id="btnToggleVoices" class="panel-toggle" title="Mini/Restaurar">▸</button>
+        </div>
+    </div>
+    <div id="entityList" class="only-when-open space-y-4 max-h-[45vh] overflow-y-auto pr-2 mt-2"></div>
+  </aside>
+
+  <!-- PAINEL MESTRE (fusão) -->
+  <aside id="masterPanel" class="panel rounded-2xl p-4 draggable" style="right:1rem; top:1rem; width:min(380px,94vw)">
+    <div id="masterHeader" class="flex items-center justify-between mb-2 drag-handle">
+      <h2 class="text-lg font-bold title">A7 • Painel Mestre</h2>
+      <div class="flex items-center gap-2">
+        <span class="chip">∆7/∆5</span>
+        <button id="btnToggleMaster" class="panel-toggle" title="Mini/Restaurar">▸</button>
+      </div>
+    </div>
+
+    <div class="only-when-open space-y-3" id="masterBody">
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-cyan-200">STATUS:</span>
+        <span class="badge" id="badgeStatus">ORBIT • HOLD</span>
+      </div>
+      <div class="grid gap-2" style="grid-template-columns:1fr 1fr;">
+        <button id="mPreset" class="btn rounded-md py-2 font-bold">∆5 AETHER</button>
+        <button id="mDrum" class="btn rounded-md py-2 font-bold">♾︎ DRONE</button>
+        <button id="mBreak" class="btn rounded-md py-2 font-bold">Partir</button>
+        <button id="mSeal" class="btn rounded-md py-2 font-bold">Selar</button>
+        <button id="mPause" class="btn rounded-md py-2 font-bold">⏸︎/▶︎</button>
+        <button id="mChange" class="btn rounded-md py-2 font-bold">MUDAR</button>
+      </div>
+
+      <div class="portal-box space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-gray-300">KOBLLUX</span>
+          <span id="kStatus" class="chip bg-cyan-900 border border-cyan-500">SYNC • 77%</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-gray-300">AETHER</span>
+          <span id="aStatus" class="chip bg-emerald-900 border border-emerald-500">ONLINE • 99%</span>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs text-cyan-200">Ganho Mestre</label>
+        <input id="gainSlider" type="range" min="0" max="1" step="0.01" class="slider w-full" value="0.5" />
+        <label class="text-xs text-cyan-200">Damping Visual</label>
+        <input id="dampSlider" type="range" min="0" max="0.98" step="0.01" class="slider w-full" value="0.85" />
+        <label class="text-xs text-cyan-200">Additiva (rastro)</label>
+        <input id="trailSlider" type="range" min="0" max="1" step="0.01" class="slider w-full" value="0.4" />
+      </div>
+    </div>
+  </aside>
+
+  <!-- TEST PANEL (non-intrusive) -->
+  <aside id="testPanel" class="panel rounded-2xl p-3 draggable" style="right:1rem; bottom:1rem; width:min(360px,94vw)">
+    <div id="testHeader" class="flex items-center justify-between mb-2 drag-handle">
+      <div class="text-sm text-cyan-200/80">Testes Rápidos</div>
+      <button id="btnToggleTest" class="panel-toggle" title="Mini/Restaurar">▸</button>
+    </div>
+    <div class="only-when-open space-y-2" id="testBody">
+      <div class="grid gap-2" style="grid-template-columns:1fr 1fr;">
+        <button id="btnRunTests" class="btn rounded-md py-2 font-bold">Rodar Testes</button>
+        <button id="btnSimCopy" class="btn rounded-md py-2 font-bold">Simular Copy</button>
+      </div>
+      <pre id="testLog" class="codebox" style="max-height:30vh"></pre>
+    </div>
+  </aside>
+
+  <script>
+  // ===== Util =====
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function toast(msg, ok=true){
+    const box = document.createElement('div'); box.className = `toast-item ${ok? 'toast-ok':'toast-err'}`; box.textContent = msg;
+    const root = $('#toast'); root.appendChild(box); setTimeout(()=>{ box.style.opacity = '0'; box.style.transform='translateY(6px)'; setTimeout(()=> box.remove(), 320); }, 1800);
+  }
+
+  // Clipboard helper with secure fallback + manual select
+  async function copyTextSafe(text, opts={}){
+    const { sourceEl=null, label='Conteúdo' , forceFallback=false } = opts;
+    try{
+      if(!forceFallback && navigator.clipboard?.writeText && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        toast(`${label} copiado`, true); return true;
+      }
+      // else -> fallback path
+      throw new Error('ClipboardAPIUnavailable');
+    }catch(err){
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position='fixed'; ta.style.left='-9999px'; ta.setAttribute('readonly','');
+        document.body.appendChild(ta); ta.select();
+        const ok = document.execCommand('copy'); document.body.removeChild(ta);
+        if(ok){ toast(`${label} copiado (fallback)`, true); return true; }
+      }catch(e){ /* ignore */ }
+
+      // Manual select as last resort (permissions policy / sandbox)
+      if(sourceEl){
+        try{
+          const range = document.createRange(); range.selectNodeContents(sourceEl);
+          const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+          sourceEl.classList.add('copy-highlight'); setTimeout(()=> sourceEl.classList.remove('copy-highlight'), 1500);
+          toast(`Selecione e copie manualmente (Ctrl/Cmd+C)`, false);
+          return false;
+        }catch(e){ /* ignore */ }
+      }
+      toast('Não foi possível copiar automaticamente. (Política de permissões)', false);
+      return false;
+    }
+  }
+
+  // ===== Drag generic =====
+  function makeDraggable(panel, handle){
+    let ox=0, oy=0, sx=0, sy=0, dragging=false;
+    const onDown = (e)=>{
+      dragging=true; panel.classList.add('dragging');
+      const r = panel.getBoundingClientRect();
+      sx = (e.touches? e.touches[0].clientX : e.clientX); sy = (e.touches? e.touches[0].clientY : e.clientY);
+      ox = r.left; oy = r.top; e.preventDefault();
+    };
+    const onMove = (e)=>{
+      if(!dragging) return;
+      const cx = (e.touches? e.touches[0].clientX : e.clientX); const cy = (e.touches? e.touches[0].clientY : e.clientY);
+      const nx = clamp(ox + (cx - sx), 4, window.innerWidth - panel.offsetWidth - 4);
+      const ny = clamp(oy + (cy - sy), 4, window.innerHeight - 48);
+      panel.style.left = nx + 'px'; panel.style.top = ny + 'px';
+    };
+    const onUp = ()=>{ dragging=false; panel.classList.remove('dragging'); };
+    handle.addEventListener('mousedown', onDown); handle.addEventListener('touchstart', onDown, {passive:false});
+    window.addEventListener('mousemove', onMove, {passive:false}); window.addEventListener('touchmove', onMove, {passive:false});
+    window.addEventListener('mouseup', onUp); window.addEventListener('touchend', onUp);
+  }
+
+  // ===== Panels init =====
+  function setupPanelToggle(btn, panel){
+    btn.addEventListener('click', ()=>{ panel.classList.toggle('mini'); });
+  }
+
+  // ===== Tabs =====
+  function setupTabs(){
+    const btnDeco = $('#tabDecodifica');
+    const btnArq  = $('#tabArquivos');
+    const bodyDeco = $('#tabDecodificaBody');
+    const bodyArq  = $('#tabArquivosBody');
+    btnDeco.addEventListener('click', ()=>{ btnDeco.classList.add('active'); btnArq.classList.remove('active'); bodyDeco.style.display='block'; bodyArq.style.display='none'; });
+    btnArq.addEventListener('click', ()=>{ btnArq.classList.add('active'); btnDeco.classList.remove('active'); bodyArq.style.display='block'; bodyDeco.style.display='none'; });
+  }
+
+  // ===== ASCII generator =====
+  function asciiBox(text){
+    const lines = text.split(/\r?\n/);
+    const w = Math.max(...lines.map(l=>l.length), 1);
+    const top = '╔' + '═'.repeat(w+2) + '╗';
+    const mid = lines.map(l=> '║ ' + l.padEnd(w,' ') + ' ║').join('\n');
+    const bot = '╚' + '═'.repeat(w+2) + '╝';
+    return `${top}\n${mid}\n${bot}`;
+  }
+
+  // ===== File tab =====
+  function setupFiles(){
+    const input = $('#fileInput'); const view = $('#fileView'); const meta = $('#fileMeta');
+    $('#btnFileCopy').addEventListener('click', async()=>{
+      await copyTextSafe(view.textContent || '', { sourceEl: view, label: 'Arquivo' });
+    });
+    $('#btnFileDownload').addEventListener('click', ()=>{
+      const blob = new Blob([view.textContent||''], {type:'text/plain'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (meta.dataset.name||'arquivo')+'.txt'; a.click(); URL.revokeObjectURL(a.href);
+    });
+    input.addEventListener('change', async (e)=>{
+      const f = e.target.files[0]; if(!f) return; meta.style.display='inline-block'; meta.textContent = `${f.name} • ${f.size} bytes`; meta.dataset.name = f.name.replace(/\.[^.]+$/, '');
+      const tx = await f.text(); view.textContent = tx;
+    });
+  }
+
+  // ===== A7 Player (WebAudio) =====
+  let actx, master, analyser;
+  let drone=null, droneGain=null; // 7.83 Hz mod drone
+  let running = false;
+  const entities = [
+    // 12 Arquétipos
+    'Atlas','Nova','Vitalis','Pulse','Artemis','Serena','Kaos','Genus','Lumine','Solus','Rhea','Aion',
+    // 8 Fundações
+    'UNO','DUO','TRINITY','KODUX','BLLUE','KOBLLUX','INFODOSE','OMEGA'
+  ];
+
+  // Each entity -> base freq table (musical-ish mapping for quick cues)
+  const baseFreq = {
+    Atlas:196, Nova:261.63, Vitalis:220, Pulse:246.94, Artemis:293.66, Serena:207.65, Kaos:185, Genus:233.08, Lumine:311.13, Solus:98, Rhea:174.61, Aion:136.10,
+    UNO:128, DUO:171.5, TRINITY:192, KODUX:110, BLLUE:264, KOBLLUX:144, INFODOSE:222, OMEGA:256
+  };
+
+  const activeOsc = new Map();
+
+  function ensureAudio(){
+    if(actx) return;
+    actx = new (window.AudioContext||window.webkitAudioContext)();
+    master = actx.createGain(); master.gain.value = parseFloat($('#gainSlider').value);
+    analyser = actx.createAnalyser(); analyser.fftSize = 1024; analyser.smoothingTimeConstant = 0.8;
+    master.connect(analyser); analyser.connect(actx.destination);
+  }
+
+  function playEntity(name){
+    ensureAudio();
+    if(activeOsc.has(name)) return;
+    const o = actx.createOscillator();
+    const g = actx.createGain(); g.gain.value = 0.0;
+    o.type = 'sine'; o.frequency.value = baseFreq[name] || 220;
+    o.connect(g).connect(master);
+    o.start();
+    // ramp in
+    g.gain.linearRampToValueAtTime(0.18, actx.currentTime + 0.25);
+    activeOsc.set(name, {o,g});
+    running = true; loop();
+  }
+
+  function stopEntity(name){
+    const h = activeOsc.get(name); if(!h) return;
+    try{ h.g.gain.linearRampToValueAtTime(0.0001, actx.currentTime + 0.15); }catch{}
+    setTimeout(()=>{ try{h.o?.stop();}catch{}; try{h.o?.disconnect();}catch{}; try{h.g?.disconnect();}catch{}; activeOsc.delete(name); }, 260);
+  }
+
+  function toggleDrone(){
+    ensureAudio();
+    if(drone){ // stop (guard with local refs to avoid null race)
+      const localCarrier = drone; const localGain = droneGain;
+      try{ localGain?.gain.linearRampToValueAtTime(0.0001, actx.currentTime + 0.25); }catch{}
+      setTimeout(()=>{ try{ localCarrier?.stop(); }catch{}; try{ localCarrier?.disconnect(); }catch{}; try{ localGain?.disconnect(); }catch{}; }, 400);
+      drone=null; droneGain=null; return;
+    }
+    // 7.83 Hz modulator as amplitude wobble over a mid tone (e.g., 128 Hz)
+    const carrier = actx.createOscillator(); carrier.type='sine'; carrier.frequency.value = 128;
+    const g = actx.createGain(); g.gain.value = 0.12;
+    const lfo = actx.createOscillator(); lfo.type='sine'; lfo.frequency.value = 7.83;
+    const lfoGain = actx.createGain(); lfoGain.gain.value = 0.08; // depth
+    lfo.connect(lfoGain).connect(g.gain);
+    carrier.connect(g).connect(master);
+    carrier.start(); lfo.start();
+    drone = carrier; droneGain = g; running = true; loop();
+  }
+
+  // ===== Visualizer (additiva + damping + resume on focus) =====
+  const cvs = $('#canvas'); const ctx = cvs.getContext('2d');
+  let W=0, H=0; let raf=0; let last = 0; let trail = 0.4; let damp=0.85;
+  const fft = new Uint8Array(512);
+  const acc = new Float32Array(512); // additive accumulator for trail
+
+  function resize(){ W = cvs.width = innerWidth * devicePixelRatio; H = cvs.height = innerHeight * devicePixelRatio; ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio, devicePixelRatio); }
+  window.addEventListener('resize', resize, {passive:true}); resize();
+
+  function loop(ts){
+    if(!running) return; raf = requestAnimationFrame(loop);
+    const t = ts||0; const dt = (t-last)||16; last = t;
+    // clear with gentle alpha for global fade
+    ctx.fillStyle = 'rgba(0, 12, 14, 0.2)';
+    ctx.fillRect(0,0,innerWidth,innerHeight);
+
+    if(analyser){ analyser.getByteFrequencyData(fft); }
+    for(let i=0;i<fft.length;i++){
+      // exponential damping of accumulator + additive boost from new frame
+      acc[i] = acc[i]*damp + (fft[i]/255)*trail;
+    }
+
+    // draw bars as radial field
+    const cx = innerWidth/2, cy = innerHeight/2; const R = Math.min(cx,cy)*0.8;
+    ctx.save();
+    ctx.translate(cx, cy);
+    const N = fft.length;
+    for(let i=0;i<N;i++){
+      const a = (i/N)*Math.PI*2;
+      const v = (fft[i]/255)*R*0.45 + acc[i]*R*0.55;
+      const x = Math.cos(a)*(R*0.5);
+      const y = Math.sin(a)*(R*0.5);
+      ctx.beginPath();
+      ctx.moveTo(x,y);
+      ctx.lineTo(Math.cos(a)*(R*0.5 + v), Math.sin(a)*(R*0.5 + v));
+      const hue = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hue')) + i*0.6)%360;
+      ctx.strokeStyle = `hsla(${hue}, 90%, 60%, 0.85)`;
+      ctx.lineWidth = 1.25;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // nucleus pulse
+    const r = 12 + Math.sin(t*0.004)*6 + (acc[8]*40);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(0,255,255,0.8)'; ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  // visibility pause/resume
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden){
+      running=false; if(raf) cancelAnimationFrame(raf);
+      if(actx && actx.state === 'running') actx.suspend();
+    } else {
+      if(actx && actx.state === 'suspended') actx.resume();
+      running=true; loop();
+    }
+  });
+
+  // ===== Entities list UI =====
+  function renderEntities(){
+    const el = $('#entityList'); el.innerHTML = '';
+    entities.forEach(name=>{
+      const row = document.createElement('div'); row.className = 'grid-auto';
+      const left = document.createElement('div'); left.textContent = name; left.className = 'text-sm';
+      const btnOn = document.createElement('button'); btnOn.textContent = '▶'; btnOn.className='btn px-3 py-1 rounded-md';
+      const btnOff= document.createElement('button'); btnOff.textContent= '■'; btnOff.className='btn px-3 py-1 rounded-md';
+      btnOn.addEventListener('click', ()=> playEntity(name));
+      btnOff.addEventListener('click', ()=> stopEntity(name));
+      row.appendChild(left); row.appendChild(btnOn); row.appendChild(btnOff);
+      el.appendChild(row);
+    });
+  }
+
+  // ===== Presets ∆5 / ∆7 =====
+  function applyPresetDelta5(){
+    // AETHER suave: mais damping, mais rastro, hue esmeralda
+    damp = 0.9; trail = 0.55; if(analyser) analyser.smoothingTimeConstant = 0.92; document.documentElement.style.setProperty('--hue','165');
+    $('#badgeStatus').textContent = 'AETHER ∆5 • SUAVE';
+  }
+  function applyPresetDelta7(){
+    // Selo ∆7: visual nítido, menos rastro, hue ciano-azulado
+    damp = 0.8; trail = 0.35; if(analyser) analyser.smoothingTimeConstant = 0.8; document.documentElement.style.setProperty('--hue','190');
+    $('#badgeStatus').textContent = 'SELO ∆7 • NÍTIDO';
+  }
+
+  // ===== Controls / bindings =====
+  function setupControls(){
+    // mini toggles
+    setupPanelToggle($('#btnToggleHud'), $('#hudPanel'));
+    setupPanelToggle($('#btnTogglePortal'), $('#portalEntrada'));
+    setupPanelToggle($('#btnToggleVoices'), $('#voicesAside'));
+    setupPanelToggle($('#btnToggleMaster'), $('#masterPanel'));
+    setupPanelToggle($('#btnToggleTest'), $('#testPanel'));
+
+    // drags
+    makeDraggable($('#hudPanel'), $('#hudHeader'));
+    makeDraggable($('#portalEntrada'), $('#portalHeader'));
+    makeDraggable($('#voicesAside'), $('#voicesHeader'));
+    makeDraggable($('#masterPanel'), $('#masterHeader'));
+    makeDraggable($('#testPanel'), $('#testHeader'));
+
+    // Presets
+    $('#btnPreset').addEventListener('click', applyPresetDelta5);
+    $('#mPreset').addEventListener('click', applyPresetDelta5);
+
+    // Drone
+    function droneAction(){ ensureAudio(); toggleDrone(); running = true; loop(); }
+    $('#btnDrum').addEventListener('click', droneAction);
+    $('#mDrum').addEventListener('click', droneAction);
+
+    // Pause
+    async function togglePause(){ ensureAudio();
+      if(actx.state === 'running'){ await actx.suspend(); $('#badgeStatus').textContent = 'PAUSA'; running=false; if(raf) cancelAnimationFrame(raf); }
+      else { await actx.resume(); running=true; loop(); $('#badgeStatus').textContent='EXECUTANDO'; }
+    }
+    $('#btnPause').addEventListener('click', togglePause);
+    $('#mPause').addEventListener('click', togglePause);
+
+    // Change (preset ∆7 quick)
+    function change(){ applyPresetDelta7(); }
+    $('#btnChange').addEventListener('click', change);
+    $('#mChange').addEventListener('click', change);
+
+    // Break / Seal visual cues
+    function doBreak(){ document.documentElement.style.setProperty('--hue','12'); $('#badgeStatus').textContent='RUPTURA (KAOS)'; damp=0.72; trail=0.2; }
+    function doSeal(){ document.documentElement.style.setProperty('--hue','190'); $('#badgeStatus').textContent='SELO ∆7'; applyPresetDelta7(); }
+    $('#btnBreak').addEventListener('click', doBreak);
+    $('#mBreak').addEventListener('click', doBreak);
+    $('#btnSeal').addEventListener('click', doSeal);
+    $('#mSeal').addEventListener('click', doSeal);
+
+    // Gain & params
+    $('#gainSlider').addEventListener('input', e=>{ ensureAudio(); master.gain.value = parseFloat(e.target.value); });
+    $('#dampSlider').addEventListener('input', e=>{ damp = parseFloat(e.target.value); });
+    $('#trailSlider').addEventListener('input', e=>{ trail = parseFloat(e.target.value); });
+
+    // ASCII/Portal Decodifica
+    $$('.op').forEach(b=> b.addEventListener('click', ()=>{ const t = $('#decodeIn'); t.setRangeText(b.dataset.insert, t.selectionStart, t.selectionEnd, 'end'); t.dispatchEvent(new Event('input')); }));
+    $('#btnAscii').addEventListener('click', ()=>{ $('#asciiOut').textContent = asciiBox($('#decodeIn').value || 'KOBLLUX ∆7'); });
+    $('#btnCopy').addEventListener('click', async()=>{ await copyTextSafe($('#asciiOut').textContent || '', { sourceEl: $('#asciiOut'), label: 'ASCII' }); });
+    $('#btnDecopy').addEventListener('click', async()=>{ const msg = `Verdade × integrar ÷ ∆ = ♾️\n\n` + ($('#asciiOut').textContent||''); await copyTextSafe(msg, { sourceEl: $('#asciiOut'), label: 'Prompt+ASCII' }); });
+
+    // Ativar roda viva (sonifica inicio)
+    $('#btnActivate').addEventListener('click', ()=>{
+      ensureAudio();
+      ['Atlas','Nova','Vitalis','Pulse'].forEach((n,i)=> setTimeout(()=> playEntity(n), i*140));
+      setTimeout(()=> applyPresetDelta7(), 1200);
+      running=true; loop();
+    });
+
+    // Tests
+    $('#btnRunTests').addEventListener('click', runTests);
+    $('#btnSimCopy').addEventListener('click', async()=>{ const ok = await copyTextSafe('Teste de cópia (forçada via fallback).', { sourceEl: $('#asciiOut'), label: 'Simulado', forceFallback:true }); $('#testLog').textContent += `\n[Copy Fallback] ${ok?'OK':'FALHA'}`; });
+  }
+
+  // ===== Tests =====
+  function logTest(msg){ const el = $('#testLog'); el.textContent += (el.textContent? '\n' : '') + msg; }
+  function runTests(){
+    $('#testLog').textContent = '';
+    try{
+      // Test 1: toggleDrone twice quickly -> no error
+      ensureAudio(); toggleDrone(); setTimeout(()=>{ try{ toggleDrone(); logTest('[Drone Double Toggle] OK'); }catch(e){ logTest('[Drone Double Toggle] FALHA: '+e); } }, 50);
+
+      // Test 2: stopEntity idempotente
+      try{ stopEntity('Atlas'); stopEntity('Atlas'); logTest('[stopEntity Idempotente] OK'); }catch(e){ logTest('[stopEntity Idempotente] FALHA: '+e); }
+
+      // Test 3: copyTextSafe fallback (forced)
+      copyTextSafe('abc', { forceFallback:true, label:'Fallback Test', sourceEl: $('#asciiOut') }).then(ok=> logTest(`[Clipboard Fallback] ${ok?'OK':'FALHA (manual sugerido)'}`));
+    }catch(e){ logTest('Erro nos testes: '+e.message); }
+  }
+
+  // ===== Boot =====
+  function boot(){
+    setupTabs(); setupFiles(); renderEntities(); setupControls();
+    applyPresetDelta7(); // default visual
+    // Loader hide after first user interaction OR short timeout
+    const hideLoader = ()=> $('#loader').classList.add('hide');
+    ['click','touchstart','keydown'].forEach(ev=> window.addEventListener(ev, hideLoader, {once:true}));
+    setTimeout(hideLoader, 1200);
+  }
+  window.addEventListener('DOMContentLoaded', boot);
+  </script>
+</body>
+</html>
