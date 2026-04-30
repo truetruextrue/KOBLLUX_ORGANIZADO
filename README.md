@@ -23,3 +23,7 @@ kobllux roda
 kobllux export --out ./arquetipos.json
 python -m kobllux.examples.demo
 ```
+
+## Portal Web Experimental
+
+Um protótipo de interface web inspirada no Códice está disponível em `web/index.html`. Basta abrir o arquivo no navegador para testar a visualização 3D, o painel de pulso com reconhecimento de voz (dependente de suporte `webkitSpeechRecognition`) e a integração preparada para as APIs Gemini (informe sua chave no campo `API_KEY`).
