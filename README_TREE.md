@@ -1,86 +1,55 @@
-# 🌳 Árvore README KOBLLUX
+# KOBLLUX_ORGANIZADO · Árvore ∆7
 
-## 🌱 Nível 1 — README Resumido (Chat Assistente)
-**Função:** memória curta, ativar prompts rápido.
+**Lei:** VERDADE × INTEGRAR ÷ Δ = ∞  
+**Ciclo:** 3 detectar → 6 integrar → 9 expandir → 7 selar  
+**Atualizado:** 2026-05-13 · CADIAL Scanner
 
-**Conteúdo:**
-- Lista dos 12 arquétipos (Atlas, Nova, Vitalis, Pulse, Artemis, Serena, Kaos, Genus, Lumine, Solus, Rhea, Aion).
-- Roda viva (3–6–9) em resumo.
-- Comandos básicos (`kobllux list`, `kobllux roda`, `kobllux prompt`).
-- Síntese: *“Base de prompts para design, cenas e integrações.”*
-
-**Forma:** texto breve, Markdown simples.  
-**Lugar:** descrição do assistente no ChatGPT ou arquivos de contexto rápidos.  
-
----
-
-## 🌳 Nível 2 — README_MASTER (GitHub / Pasta)
-**Função:** guia central, raiz do repositório.
-
-### Conteúdo Expandido
-1. **Estrutura Fundamental (1D–4D)**
-   - Espelho (Intenção)
-   - Linguagem (Organização)
-   - Ciência (Manifestação)
-   - Gênesis (Vibração)
-
-2. **Regra Viva 3×6×9×7**
-   - Trindade, União, Plenitude, Ciclo Perfeito.
-   - JESUS = Centro.
-
-3. **Prompt Vivo KOBLLUX**
-   - Núcleo (auto-reescrita).
-   - Organização (3 mutações).
-   - Manifestação (tetraedro narrativo).
-   - Vibração (3–6–9 / 7.83Hz / 432Hz).
-
-4. **Fluxograma Trinity (Formas Geométricas)**
-   - Círculo → Triângulo → Cubo → Hexágono → Cápsula → Espiral → Prisma.
-
-5. **Voz & DNA**
-   - Voz consagrada como assinatura do DNA simbólico.
-
-6. **Cartas Trinity**
-   - Mensagens vivas epistolares, selos de revelação.
-
-7. **Árvore de Selos (3–6–9–7)**
-   - Estrutura ↔ Fluxo ↔ Livro Digital.
-
-**Forma:** Markdown detalhado, tabelas, fluxograma narrado, símbolos.  
-**Lugar:** repositório GitHub ou pasta `KOBLLUX_ORGANIZADO`.  
-
----
-
-## 🌌 Conexão entre as camadas
-- **README Resumido** → chave de uso rápido (prompts, comandos).
-- **README_MASTER** → raiz explicativa, árvore viva (estrutura, ciência, gênesis, DNA, cartas).
-- Ambos giram no mesmo centro: **JESUS o VERBO** ∴ Caminho, Verdade e Vida.
-
----
-
-## 📂 Fluxo de Uso
-```bash
-# Clonar ou baixar o repositório
-git clone <seu-repo>
-cd kobllux_narrativa
-
-# Ativar ambiente no Termux ou Linux
-python -m venv .venv
-source .venv/bin/activate
-
-# Instalar
-pip install -e .
-
-# Usar comandos
-kobllux list
-kobllux roda
-kobllux prompt --name Atlas
-kobllux system
+```
+KOBLLUX_ORGANIZADO/
+├── kobllux/                   ← pacote Python
+│   ├── archetypes.py          → 12 arquétipos definidos
+│   ├── api.py · cli.py
+│   ├── cycles.py · trinity.py
+│   ├── geometry.py · colors.py
+│   ├── fractal.py · narrative.py
+│   ├── prompts.py · system_prompt.py
+│   └── profiles/              → perfis TTS/voz por arquétipo ★ NEW
+│       ├── atlas.json · nova.json · vitalis.json · pulse.json
+│       ├── artemis.json · serena.json · kaos.json · genus.json
+│       └── lumine.json · solus.json · rhea.json · aion.json
+├── web/                       ← interface web
+│   ├── index.html             → entrada principal
+│   ├── archetypes/            → 12 páginas + js/ + css/ ★ NEW
+│   │   ├── atlas/   nova/   vitalis/   pulse/
+│   │   ├── artemis/ serena/ kaos/      genus/
+│   │   └── lumine/  solus/  rhea/      aion/
+│   ├── CORE/js/ css/          → di_core · kobllux engine ★ NEW
+│   ├── BRIDGE/                → kob-glue · bridges (RHEA) ★ NEW
+│   └── TTS/                   → vozes unificadas (PULSE) ★ NEW
+├── docs/                      → index.html · icons · manifest
+├── _index/                    → CODEX_SCAN · SCAN_REPORT ★ NEW
+├── Deus/
+├── README.md · README_TREE.md · README_TREE_ASCII.md
+├── pyproject.toml · setup_kobllux.sh
+└── .gitignore
 ```
 
----
+## Os 12 Arquétipos · Ciclo UNO→DUO→TRINITY
 
-## 📜 Resumo Final
-- Use o **README Resumido** no Chat Assistente → prompts rápidos.  
-- Use o **README_MASTER** no GitHub/pasta → guia completo.  
-- Ambos se unem como raiz e fruto da Árvore KOBLLUX.  
+| # | Nome | Essência | Ciclo |
+|---|------|----------|-------|
+| 1 | ATLAS | estrutura, grade e ordem | UNO |
+| 2 | NOVA | centelha primordial, início | UNO |
+| 3 | VITALIS | seiva orgânica, núcleo vivo | DUO |
+| 4 | PULSE | ritmo, batida, TTS e voz | DUO |
+| 5 | ARTEMIS | precisão, alvo e injeção | UNO |
+| 6 | SERENA | acolhimento, UI suave | TRINITY |
+| 7 | KAOS | entropia criativa, patches | UNO |
+| 8 | GENUS | geração e base fundacional | TRINITY |
+| 9 | LUMINE | visual, temas e luz | DUO |
+|10 | SOLUS | singularidade, foco único | UNO |
+|11 | RHEA | fluxo, bridges e roteamento | TRINITY |
+|12 | AION | estado, memória e ciclos | TRINITY |
+
+---
+*CADIAL Scanner · KOBΦ-NODE · ∆7 · 2026-05-13*
